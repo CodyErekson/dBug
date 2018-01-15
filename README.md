@@ -32,6 +32,9 @@ It’s FREE!!!
 
 ## Changelog
 
+**1.2.2**
+Use modern constructor
+
 **1.2.1** 
 Move dBug.php to src/ directory to comply with PSR4 autoloading standards
 Create dBug/ namespace
