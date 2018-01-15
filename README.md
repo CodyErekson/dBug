@@ -9,7 +9,23 @@ Original here: https://github.com/ospinto/dBug
 
 ## How to use
 
+	require(__DIR__ . '/vendor/autoload.php');
+	
     new dBug($myVariable);
+    
+In my projects, I wrap the class instantiation with something like 
+the following, which allows for passing in multiple arguments.
+
+	if ( !function_exists('ddd') ){
+    	function ddd(... $args)
+    	{
+    		foreach ($args as $x) {
+    			new \dBug\dBug($x);
+    		}
+    	}
+    }
+    
+    ddd($a, $b, $arr);
 
 More examples at http://dbug.ospinto.com/examples.php
 
@@ -31,6 +47,10 @@ Table cells can be expanded and collapsed.
 It’s FREE!!!
 
 ## Changelog
+
+**1.2.3**
+Handling for closures
+Generate PHPDoc
 
 **1.2.2**
 Use modern constructor

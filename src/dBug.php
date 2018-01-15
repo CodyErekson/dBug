@@ -8,10 +8,13 @@ namespace dBug;
  * August 6th, 2012
  *
  *
- * AUTHOR
+ * AUTHORS
  * =============
  * Kwaku Otchere
  * ospinto@hotmail.com
+ *
+ * Cody Erekson
+ * cody.erekson@gmail.com
  *
  * AFTERMARKET HACKER
  * ==================
@@ -24,7 +27,7 @@ namespace dBug;
  * Hope the next version of PHP can implement this or have something similar
  * I love PHP, but var_dump BLOWS!!!
  *
- * FOR DOCUMENTATION AND MORE EXAMPLES: VISIT http://dbug.ospinto.com
+ * FOR DOCUMENTATION (OF ORIGINAL VERSION) AND MORE EXAMPLES: VISIT http://dbug.ospinto.com
  *
  *
  * PURPOSE
@@ -68,7 +71,12 @@ class dBug {
 	var $bCollapsed = false;
 	var $arrHistory = array();
 
-	//constructor
+	/**
+	 * dBug constructor.
+	 * @param $var
+	 * @param string $forceType
+	 * @param bool $bCollapsed
+	 */
 	function __construct($var,$forceType="",$bCollapsed=false) {
 		//include js and css scripts
 		if(!defined('BDBUGINIT')) {
@@ -83,7 +91,10 @@ class dBug {
 			$this->checkType($var);
 	}
 
-	//get variable name
+	/**
+	 * Get variable name
+	 * @return string
+	 */
 	function getVariableName() {
 		$arrBacktrace = debug_backtrace();
 
@@ -114,7 +125,12 @@ class dBug {
 		return "";
 	}
 
-	//create the main table header
+	/**
+	 * Create the main table header
+	 * @param $type
+	 * @param $header
+	 * @param int $colspan
+	 */
 	function makeTableHeader($type,$header,$colspan=2) {
 		if(!$this->bInitialized) {
 			$header = $this->getVariableName() . " (" . $header . ")";
@@ -128,7 +144,11 @@ class dBug {
 				</tr>";
 	}
 
-	//create the table row header
+	/**
+	 * Create the table row header
+	 * @param $type
+	 * @param $header
+	 */
 	function makeTDHeader($type,$header) {
 		$str_d = ($this->bCollapsed) ? " style=\"display:none\"" : "";
 		echo "<tr".$str_d.">
@@ -136,12 +156,19 @@ class dBug {
 				<td>";
 	}
 
-	//close table row
+	/**
+	 * Close table row
+	 * @return string
+	 */
 	function closeTDRow() {
 		return "</td></tr>\n";
 	}
 
-	//error
+	/**
+	 * Generate error message
+	 * @param $type
+	 * @return string
+	 */
 	function  error($type) {
 		$error="Error: Variable cannot be a";
 		// this just checks if the type starts with a vowel or "x" and displays either "a" or "an"
@@ -150,7 +177,10 @@ class dBug {
 		return ($error." ".$type." type");
 	}
 
-	//check variable type
+	/**
+	 * Check variable type
+	 * @param $var
+	 */
 	function checkType($var) {
 		switch(gettype($var)) {
 			case "resource":
@@ -175,19 +205,30 @@ class dBug {
 		}
 	}
 
-	//if variable is a NULL type
+	/*
+	 * If variable is a NULL type
+	 */
 	function varIsNULL() {
 		echo "NULL";
 	}
 
-	//if variable is a boolean type
+	/*
+	 * If variable is a boolean type
+	 */
 	function varIsBoolean($var) {
 		$var=($var==1) ? "TRUE" : "FALSE";
 		echo $var;
 	}
 
-	//if variable is an array type
+	/*
+	 * If variable is an array type
+	 */
 	function varIsArray($var) {
+		$reflection = new \ReflectionFunction($var);
+		if ( $reflection->isClosure() ){
+			$this->checkType("Closure");
+			return;
+		}
 		$var_ser = serialize($var);
 		array_push($this->arrHistory, $var_ser);
 
@@ -217,8 +258,16 @@ class dBug {
 		echo "</table>";
 	}
 
-	//if variable is an object type
+	/**
+	 * If variable is an object type
+	 * @param $var
+	 */
 	function varIsObject($var) {
+		$reflection = new \ReflectionFunction($var);
+		if ( $reflection->isClosure() ){
+			$this->checkType("Closure");
+			return;
+		}
 		$var_ser = serialize($var);
 		array_push($this->arrHistory, $var_ser);
 		$this->makeTableHeader("object","object");
@@ -254,7 +303,10 @@ class dBug {
 		echo "</table>";
 	}
 
-	//if variable is a resource type
+	/**
+	 * If variable is a resource type
+	 * @param $var
+	 */
 	function varIsResource($var) {
 		$this->makeTableHeader("resourceC","resource",1);
 		echo "<tr>\n<td>\n";
@@ -282,7 +334,11 @@ class dBug {
 		echo $this->closeTDRow()."</table>\n";
 	}
 
-	//if variable is a database resource type
+	/**
+	 * If variable is a database resource type
+	 * @param $var
+	 * @param string $db
+	 */
 	function varIsDBResource($var,$db="mysql") {
 		if($db == "pgsql")
 			$db = "pg";
@@ -326,7 +382,10 @@ class dBug {
 			call_user_func($db."_data_seek",$var,0);
 	}
 
-	//if variable is an image/gd resource type
+	/**
+	 * If variable is an image/gd resource type
+	 * @param $var
+	 */
 	function varIsGDResource($var) {
 		$this->makeTableHeader("resource","gd",2);
 		$this->makeTDHeader("resource","Width");
@@ -338,12 +397,18 @@ class dBug {
 		echo "</table>";
 	}
 
-	//if variable is an xml type
+	/**
+	 * If variable is an xml type
+	 * @param $var
+	 */
 	function varIsXml($var) {
 		$this->varIsXmlResource($var);
 	}
 
-	//if variable is an xml resource type
+	/**
+	 * If variable is an xml resource type
+	 * @param $var
+	 */
 	function varIsXmlResource($var) {
 		$xml_parser=xml_parser_create();
 		xml_parser_set_option($xml_parser,XML_OPTION_CASE_FOLDING,0);
@@ -376,7 +441,12 @@ class dBug {
 
 	}
 
-	//parse xml
+	/**
+	 * Parse xml
+	 * @param $xml_parser
+	 * @param $data
+	 * @param $bFinal
+	 */
 	function xmlParse($xml_parser,$data,$bFinal) {
 		if (!xml_parse($xml_parser,$data,$bFinal)) {
 			die(sprintf("XML error: %s at line %d\n",
@@ -385,7 +455,12 @@ class dBug {
 		}
 	}
 
-	//xml: inititiated when a start tag is encountered
+	/**
+	 * xml: inititiated when a start tag is encountered
+	 * @param $parser
+	 * @param $name
+	 * @param $attribs
+	 */
 	function xmlStartElement($parser,$name,$attribs) {
 		$this->xmlAttrib[$this->xmlCount]=$attribs;
 		$this->xmlName[$this->xmlCount]=$name;
@@ -401,7 +476,11 @@ class dBug {
 		$this->xmlCount++;
 	}
 
-	//xml: initiated when an end tag is encountered
+	/**
+	 * xml: initiated when an end tag is encountered
+	 * @param $parser
+	 * @param $name
+	 */
 	function xmlEndElement($parser,$name) {
 		for($i=0;$i<$this->xmlCount;$i++) {
 			eval($this->xmlSData[$i]);
@@ -419,7 +498,11 @@ class dBug {
 		$this->xmlCount=0;
 	}
 
-	//xml: initiated when text between tags is encountered
+	/**
+	 * xml: initiated when text between tags is encountered
+	 * @param $parser
+	 * @param $data
+	 */
 	function xmlCharacterData($parser,$data) {
 		$count=$this->xmlCount-1;
 		if(!empty($this->xmlCData[$count]))
@@ -428,7 +511,11 @@ class dBug {
 			$this->xmlCData[$count]=$data;
 	}
 
-	//xml: initiated when a comment or other miscellaneous texts is encountered
+	/**
+	 * xml: initiated when a comment or other miscellaneous texts is encountered
+	 * @param $parser
+	 * @param $data
+	 */
 	function xmlDefaultHandler($parser,$data) {
 		//strip '<!--' and '-->' off comments
 		$data=str_replace(array("&lt;!--","--&gt;"),"",htmlspecialchars($data));
@@ -439,6 +526,9 @@ class dBug {
 			$this->xmlDData[$count]=$data;
 	}
 
+	/**
+	 * Initialize javascript and css for output display
+	 */
 	function initJSandCSS() {
 		echo <<<SCRIPTS
 			<script language="JavaScript">
@@ -542,4 +632,3 @@ SCRIPTS;
 	}
 
 }
-?>
