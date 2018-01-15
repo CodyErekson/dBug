@@ -224,12 +224,7 @@ class dBug {
 	 * If variable is an array type
 	 */
 	function varIsArray($var) {
-		$reflection = new \ReflectionFunction($var);
-		if ( $reflection->isClosure() ){
-			$this->checkType("Closure");
-			return;
-		}
-		$var_ser = serialize($var);
+		$var_ser = json_encode($var);
 		array_push($this->arrHistory, $var_ser);
 
 		$this->makeTableHeader("array","array");
@@ -239,7 +234,7 @@ class dBug {
 
 				//check for recursion
 				if(is_array($value)) {
-					$var_ser = serialize($value);
+					$var_ser = json_encode($var);
 					if(in_array($var_ser, $this->arrHistory, TRUE))
 						$value = "*RECURSION*";
 				}
@@ -263,12 +258,7 @@ class dBug {
 	 * @param $var
 	 */
 	function varIsObject($var) {
-		$reflection = new \ReflectionFunction($var);
-		if ( $reflection->isClosure() ){
-			$this->checkType("Closure");
-			return;
-		}
-		$var_ser = serialize($var);
+		$var_ser = json_encode($var);
 		array_push($this->arrHistory, $var_ser);
 		$this->makeTableHeader("object","object");
 
@@ -281,7 +271,7 @@ class dBug {
 
 				//check for recursion
 				if(is_object($value)||is_array($value)) {
-					$var_ser = serialize($value);
+					$var_ser = json_encode($var);
 					if(in_array($var_ser, $this->arrHistory, TRUE)) {
 						$value = (is_object($value)) ? "*RECURSION* -> $".get_class($value) : "*RECURSION*";
 
