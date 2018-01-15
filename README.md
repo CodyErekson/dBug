@@ -1,8 +1,14 @@
 # dBug
 
+This is my fork of ospinto's dBug class.
+Original here: https://github.com/ospinto/dBug
+
+## Install
+
+	composer require chillem/dbug
+
 ## How to use
 
-    include_once("dBug.php");
     new dBug($myVariable);
 
 More examples at http://dbug.ospinto.com/examples.php
@@ -23,3 +29,9 @@ Stylesheet can be easily edited.
 Table cells can be expanded and collapsed.
 
 It’s FREE!!!
+
+## Changelog
+
+**1.2.1** 
+Move dBug.php to src/ directory to comply with PSR4 autoloading standards
+Create dBug/ namespace
