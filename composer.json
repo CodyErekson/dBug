@@ -1,14 +1,21 @@
 {
-    "name": "ospinto/dbug",
+    "name": "chillem/dbug",
     "description": "PHP version of ColdFusion's cfdump. Outputs colored and structured tabular variable information.",
     "license": "GPL-3.0",
     "authors": [
         {
             "name": "Kwaku Otchere",
             "email": "ospinto@hotmail.com"
+        },
+        {
+            "name": "Cody Erekson",
+            "email": "cody.erekson@gmail.com",
+            "homepage": "http://codyerekson.me/"
         }
     ],
     "autoload": {
-        "files": [ "dBug.php" ]
-    }
+        "psr-4": {"Chillem\\dBug\\": "src/"}
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
